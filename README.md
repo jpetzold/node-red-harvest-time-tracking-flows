@@ -28,6 +28,6 @@ If you would like to use the [Projects Feature](https://nodered.org/docs/user-gu
 #### Configuration
 Every flow comes with a config node, where you need to enter the following:
 * ```msg.harvestid``` to specify the harvest project you want to extract.
-* ```msg.propertybearer``` to speficy the Bearer token you have for accessing the API of your project. The format has to be "Bearer <your_token>". The token can be retrieved from this [site](https://id.getharvest.com/developers).
+* ```msg.propertybearer``` to specifcy the Bearer token you have for accessing the Harvest API of your project. The format has to be "Bearer <your_token>". The token can be retrieved from this [site](https://id.getharvest.com/developers).
 * ```msg.role_id``` to specify the team you want to fetch the data for.
 * ```msg.webhookmsteams``` to configure the webhook you want to write the result data to.

@@ -1,0 +1,557 @@
+[
+    {
+        "id": "6df9daf17619de85",
+        "type": "tab",
+        "label": "Booking/week Team",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "9dc373f6.0ae8c8",
+        "type": "debug",
+        "z": "6df9daf17619de85",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1170,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "e5a2c794.d49f38",
+        "type": "inject",
+        "z": "6df9daf17619de85",
+        "name": "fullrun",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "fullrun",
+        "payload": "",
+        "payloadType": "date",
+        "x": 90,
+        "y": 200,
+        "wires": [
+            [
+                "d7fc77ad.85542"
+            ]
+        ]
+    },
+    {
+        "id": "49897765.464a28",
+        "type": "function",
+        "z": "6df9daf17619de85",
+        "name": "set headers",
+        "func": "//setting headers\nmsg.headers = {};\nmsg.headers['User-Agent'] = 'Node Red';\nmsg.headers['Harvest-Account-ID'] = msg.harvestid;\nmsg.headers['Authorization'] = msg.propertybearer;\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 490,
+        "y": 200,
+        "wires": [
+            [
+                "301f50c6.13c5d"
+            ]
+        ]
+    },
+    {
+        "id": "301f50c6.13c5d",
+        "type": "http request",
+        "z": "6df9daf17619de85",
+        "name": "get our team member id-list",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "https://api.harvestapp.com/api/v2/roles/{{{role_id}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 700,
+        "y": 200,
+        "wires": [
+            [
+                "913bd711.647fe"
+            ]
+        ]
+    },
+    {
+        "id": "913bd711.647fe",
+        "type": "json",
+        "z": "6df9daf17619de85",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 890,
+        "y": 200,
+        "wires": [
+            [
+                "fbfca428.c3b778"
+            ]
+        ]
+    },
+    {
+        "id": "fbfca428.c3b778",
+        "type": "function",
+        "z": "6df9daf17619de85",
+        "name": "reduce to user_id array",
+        "func": "msg.payload=msg.payload.user_ids;\nmsg.user_ids=msg.payload.user_ids;\n\n//flow.set(\"teamusers\",msg.payload.user_ids );\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 150,
+        "y": 260,
+        "wires": [
+            [
+                "ccf6acac.1cb3b8"
+            ]
+        ]
+    },
+    {
+        "id": "f2ba3ec2.5fdf5",
+        "type": "split",
+        "z": "6df9daf17619de85",
+        "name": "create individual lookups for every team member",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "user_id",
+        "x": 830,
+        "y": 320,
+        "wires": [
+            [
+                "ca01413.54d97c"
+            ]
+        ]
+    },
+    {
+        "id": "ca01413.54d97c",
+        "type": "function",
+        "z": "6df9daf17619de85",
+        "name": "set headers and timeframe",
+        "func": "//setting headers\nmsg.headers = {};\nmsg.headers['User-Agent'] = 'Node Red';\nmsg.headers['Harvest-Account-ID'] = msg.harvestid;\nmsg.headers['Authorization'] = msg.propertybearer;\n\n\nvar f = new Date();\n// set to Monday of this week\nf.setDate(f.getDate() - (f.getDay() + 6) % 7);\n//set to previous Monday\nf.setDate(f.getDate() - 7);\n//make new date for previousSunday\nvar t = new Date(f.getTime());\nt.setDate(t.getDate()+6);\nmsg.tf=\"from=\"+f.getFullYear()+(\"0\" + (f.getMonth() + 1)).slice(-2)+(\"0\" + f.getDate()).slice(-2)+\"&to=\"+f.getFullYear()+(\"0\" + (t.getMonth() + 1)).slice(-2)+(\"0\" + t.getDate()).slice(-2);\n\n////timeframe for previous month\n//var x = new Date();\n//x.setDate(1);\n//x.setMonth(x.getMonth()-1);\n//var f = new Date(x.getFullYear(), x.getMonth(), 1);\n//var t = new Date(x.getFullYear(), x.getMonth() + 1, 0);\n//msg.tf=\"from=\"+f.getFullYear()+(\"0\" + (f.getMonth() + 1)).slice(-2)+(\"0\" + f.getDate()).slice(-2)+\"&to=\"+f.getFullYear()+(\"0\" + (t.getMonth() + 1)).slice(-2)+(\"0\" + t.getDate()).slice(-2);\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1180,
+        "y": 320,
+        "wires": [
+            [
+                "4315569b.3e329"
+            ]
+        ]
+    },
+    {
+        "id": "b76743b4.f57a48",
+        "type": "join",
+        "z": "6df9daf17619de85",
+        "name": "Join  users",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "user_id",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 850,
+        "y": 380,
+        "wires": [
+            [
+                "aebbcb01.1767e8"
+            ]
+        ]
+    },
+    {
+        "id": "b3195525.1a3bb8",
+        "type": "http request",
+        "z": "6df9daf17619de85",
+        "name": "get team member time entries",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://api.harvestapp.com/v2/time_entries?user_id={{{user_id}}}&{{{tf}}}",
+        "tls": "",
+        "persist": true,
+        "proxy": "",
+        "authType": "",
+        "x": 430,
+        "y": 380,
+        "wires": [
+            [
+                "d1dfb274.3b5268"
+            ]
+        ]
+    },
+    {
+        "id": "aebbcb01.1767e8",
+        "type": "function",
+        "z": "6df9daf17619de85",
+        "name": "filter",
+        "func": "var msg2={};//msg to push info MS teams\nmsg2.payload={\n    \"@type\": \"MessageCard\",\n    \"@context\": \"http://schema.org/extensions\",\n    \"themeColor\": \"0076D7\",\n    \"title\": \"title\",\n    \"text\": \"text\"};\n\n\nvar projects={};//list of projects with timebookings in week\nvar meetings=0;//number of hours booked in the meeting\nvar meetingBookers={};//list of people booking on meeting projects\nvar sumHours=0;//all booked hours \nvar sumbillableHoursInternal=0; //all billable hours\nvar sumWeeklyCapacityInternal=0; // sum all weekly capacity hours\nvar numbookers=0;\nlet numInternalNonBookers=0; //number of people who did not book their time\nlet billableBbookedHoursPerPerson;\nlet numContractorsWithBookings=0;//sum of all contractors with bookings in tf\nlet util_distribution=[0,0,0,0,0,0,0,0,0,0,0,0,0,0]; // first value is amount of people with 0% util,2nd amount of people with 0,01%-10%, etc) \n\nvar featuredProjectIds={27717577:\"Qualification (2021) \",27317551:\"Meetings 21\"};//list of project ids to report on;\nvar customBillableProjectIDs={}; //list of project ids that are flagged as nonbillable in harvest but are billable\n\nlet activeUserMap= JSON.parse(flow.get(\"activeUserMap\"));//get the list of user details to extract the weekly capacity and status\nlet activeInternalUsers= 0;//will reduce by number of contractors\nlet individualBillableUtil; //individual utilization----not needed?\n\n\nlet timeentry;\nlet value2;\nfor (const [key, value] of Object.entries(msg.payload)) //go through all users (in the timebooking result) key=userid, value object with timebookings\n{\n  individualBillableUtil=0; //reset individual utiliziation\n \n  if(activeUserMap[key].is_contractor===false)//add to capacity hours\n  {\n  sumWeeklyCapacityInternal+=activeUserMap[key].weekly_capacity/3600;//add to sum of all working members\n  activeInternalUsers++;\n  }\n  else \n  {\n      if (value.time_entries.length>0)//if contractor with timebookings\n      {\n          numContractorsWithBookings++;\n      }\n       //node.warn(activeUserMap[key].first_name+ \" \"+activeUserMap[key].last_name+ value.time_entries.length);\n       //node.warn(value);\n       continue; //dont sum up external hours TEST ONLY\n      \n  }\n  \n\n  \n  \n  billableBookedHoursPerPerson=0;\n  individualBillableUtil=0; //reset individual utiliziation\n  for (let i = 0; i < (value.time_entries).length; ++i) //go through all timebooking of a user\n  {\n\n      timeentry=value.time_entries[i];\n      sumHours+=timeentry.hours;\n      \n      \n      if(timeentry.billable===true)//todo: | customBillableProjectIDs[timeentry.project.name]\n      {\n         sumbillableHoursInternal+=timeentry.hours;\n         billableBookedHoursPerPerson+=timeentry.hours;\n      }\n      \n      \n      //sum up how many hours are booked on each project\n      if(timeentry.project.name in projects)\n      {\n         projects[timeentry.project.name]=projects[timeentry.project.name]+timeentry.rounded_hours;\n      }\n      else\n      {\n         projects[timeentry.project.name]=timeentry.rounded_hours; \n      }\n      \n      //27317551 = Syncier A Meetings 2021\n      //27717577 qualification 21\n      if(timeentry.project.id==27317551)\n      {\n          meetings+=timeentry.rounded_hours;\n          meetingBookers[timeentry.user.name]=1;\n          //node.warn(value.time_entries[i].project.name + \" \"+value.time_entries[i].rounded_hours);\n      }\n      \n      //projects[value.time_entries[i].project.name]=1;\n    //console.log(`${i}: ${items[i]}`);\n  }\n  \n  \n  \n    if (value.time_entries.length===0)//if internal without timebookings\n      {\n          numInternalNonBookers++;\n      }\n    else\n    {\n    //sort all bookers into 10% slots\n    util_distribution[Math.ceil( (billableBookedHoursPerPerson/(activeUserMap[key].weekly_capacity/3600))*10)]+=1;\n    }\n  \n  //this is for debug only\n // if(billableBookedHoursPerPerson/(activeUserMap[key].weekly_capacity/3600)<0.1)\n // {node.warn(activeUserMap[key].first_name+ \" \"+activeUserMap[key].last_name+\"  \"+activeUserMap[key].id+ \":  \"+billableBookedHoursPerPerson+\"  \"+activeUserMap[key].weekly_capacity/3600 + \"  \"+billableBookedHoursPerPerson/(activeUserMap[key].weekly_capacity/3600));}\n  \n\n        \n\n    \n  \n  \n}\n\n\nlet decilOutput=\" \"+numInternalNonBookers+ \"\\tperson(s) without any time booking\" ;\n//create util_distributionoutput\nutil_distribution.forEach(function (element, index) \n{\n    if(element!==0)\n    {\n       if(index!==0)\n         decilOutput+=\"\\n\\r \"+element+ \"\\tperson(s) between \"+(index-1)*10+ \"% & \"+(index*10)+\"%\";  \n       else\n       {\n          decilOutput+=\"\\n\\r \"+element+ \"\\tperson(s) between  0% & 10%\";  \n       }\n    }\n});\n\n\n\n\n\n\n//let avgMeetingHours=meetings/Object.keys(msg.payload).length\nlet avgMeetingHours=Math.round((meetings/Object.keys(msg.payload).length + Number.EPSILON) * 100) / 100;\nlet avgMeetingHoursBookers=Math.round((meetings/Object.keys(meetingBookers).length + Number.EPSILON) * 100) / 100;\n\n\n\nmsg.payload=projects;\n\n\nmsg2.payload.title=\"Syncier Analytics Project Spread (\"+msg.tf+\")\";\nvar footer=\"\\n\\r\\n\\rbrought to you by the [Syncier Nursery Utilization Sprout](https://syncier.atlassian.net/wiki/x/uwAnS)\";\nmsg2.payload.text=Object.keys(projects).length +\" projects were booked on \\n\\r\"+avgMeetingHours+ \" avg hours p.p. booked on Internal Meetings in this timeframe \\n\\r\"+avgMeetingHoursBookers+ \" avg hours p.p. booked (of those who booked on Internal meetings)\\n\\r\"+footer;\nmsg2.url=msg.webhookmsteams;//set the url of the ms teams webhook where you would like to publish to (provided in the config node)\n\n\n\n//send out respective messages according to initital topic\nswitch (msg.topic) \n{\n  case \"fullrun\":\n     return [msg,msg2,null];  \n  case \"dryrun\":\n     \n    let billableRatio=sumbillableHoursInternal/sumWeeklyCapacityInternal;\n    let msg3={payload:billableRatio};\n    node.warn(msg2.payload.text);\n    node.warn(numContractorsWithBookings + \"contractors with bookings\");\n    node.warn(activeInternalUsers+ \" internal users\");\n    node.warn(decilOutput);\n    return [msg,null,msg3];\n  default:\n //nothing\n}\n\n\n\n\n\nlet obj = {\"you\": 100, \"me\": 75, \"foo\": 116, \"bar\": 15};\n\nlet entries = Object.entries(obj);\n// [[\"you\",100],[\"me\",75],[\"foo\",116],[\"bar\",15]]\n\nlet sorted = entries.sort((a, b) => a[1] - b[1]);\n// [[\"bar\",15],[\"me\",75],[\"you\",100],[\"foo\",116]]\n\n\n\n\n",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 460,
+        "wires": [
+            [
+                "9dc373f6.0ae8c8"
+            ],
+            [
+                "be1b6a18.b3f8d8"
+            ],
+            [
+                "9dc373f6.0ae8c8"
+            ]
+        ]
+    },
+    {
+        "id": "be1b6a18.b3f8d8",
+        "type": "http request",
+        "z": "6df9daf17619de85",
+        "name": "send to MS Teams webhook",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 840,
+        "y": 540,
+        "wires": [
+            [
+                "9dc373f6.0ae8c8"
+            ]
+        ]
+    },
+    {
+        "id": "a740234.8e362e",
+        "type": "inject",
+        "z": "6df9daf17619de85",
+        "name": "dryrun",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "dryrun",
+        "payloadType": "date",
+        "x": 90,
+        "y": 140,
+        "wires": [
+            [
+                "d7fc77ad.85542"
+            ]
+        ]
+    },
+    {
+        "id": "3c83e147.fd717e",
+        "type": "comment",
+        "z": "6df9daf17619de85",
+        "name": "flow to get an overview of what time is booked on for a certain team in harvest what projects",
+        "info": "Explanation for config node, do not edit here, do edit it in the node called \"config\"\n\nharvestid= id of Syncier accound in Harvest\npropertybearer= Auth Token: 'Bearer\nrole_id= sub_group for Syncier Analytics in Harvest",
+        "x": 340,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "ccf6acac.1cb3b8",
+        "type": "split",
+        "z": "6df9daf17619de85",
+        "name": "create individual lookups for every team member",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 490,
+        "y": 260,
+        "wires": [
+            [
+                "7d0e3315.35fa4c"
+            ]
+        ]
+    },
+    {
+        "id": "7528b808.24a4b8",
+        "type": "http request",
+        "z": "6df9daf17619de85",
+        "name": "get team member details",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": false,
+        "url": "https://api.harvestapp.com/v2/users/{{{payload}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 1090,
+        "y": 260,
+        "wires": [
+            [
+                "5013a61b.de2268"
+            ]
+        ]
+    },
+    {
+        "id": "5013a61b.de2268",
+        "type": "json",
+        "z": "6df9daf17619de85",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1270,
+        "y": 260,
+        "wires": [
+            [
+                "f96c8584.68ba78"
+            ]
+        ]
+    },
+    {
+        "id": "f96c8584.68ba78",
+        "type": "join",
+        "z": "6df9daf17619de85",
+        "name": "Join  users",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 110,
+        "y": 320,
+        "wires": [
+            [
+                "bfe0225b.8d5a48"
+            ]
+        ]
+    },
+    {
+        "id": "7d0e3315.35fa4c",
+        "type": "function",
+        "z": "6df9daf17619de85",
+        "name": "set headers and timeframe",
+        "func": "//setting headers\nmsg.headers = {};\nmsg.headers['User-Agent'] = 'Node Red';\nmsg.headers['Harvest-Account-ID'] = msg.harvestid;\nmsg.headers['Authorization'] = msg.propertybearer;\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 260,
+        "wires": [
+            [
+                "7528b808.24a4b8"
+            ]
+        ]
+    },
+    {
+        "id": "bfe0225b.8d5a48",
+        "type": "function",
+        "z": "6df9daf17619de85",
+        "name": "get weekly hours and drop deactivated",
+        "func": "// issue with users who get deactivated and have timebookings, but they will be ignored\n\nif(msg.topic===\"dryrun\")\n{\n  node.warn(\"all in team: \"+msg.payload.length)\n}\n//let activeInternalUserIdsArray=[];\nlet activeUserMap={};\n\nfor (const [key, user] of Object.entries(msg.payload)) //go through all users\n{\n    \n if(user.is_active)   \n {\n     activeUserMap[user.id]=user;\n   // activeInternalUserIdsArray.push(user.id);\n    \n }\n\n}\n\nif(msg.topic===\"dryrun\")\n{\n node.warn(\"active: \"+Object.keys(activeUserMap).length);\n \n}\n\nmsg.payload=activeUserMap;\nflow.set(\"activeUserMap\",JSON.stringify(activeUserMap));\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 320,
+        "wires": [
+            [
+                "f2ba3ec2.5fdf5"
+            ]
+        ]
+    },
+    {
+        "id": "4315569b.3e329",
+        "type": "delay",
+        "z": "6df9daf17619de85",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "3",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "3",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 160,
+        "y": 380,
+        "wires": [
+            [
+                "b3195525.1a3bb8"
+            ]
+        ]
+    },
+    {
+        "id": "d1dfb274.3b5268",
+        "type": "json",
+        "z": "6df9daf17619de85",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 670,
+        "y": 380,
+        "wires": [
+            [
+                "b76743b4.f57a48"
+            ]
+        ]
+    },
+    {
+        "id": "d7fc77ad.85542",
+        "type": "credentials",
+        "z": "6df9daf17619de85",
+        "name": "config",
+        "props": [
+            {
+                "value": "harvestid",
+                "type": "msg"
+            },
+            {
+                "value": "propertybearer",
+                "type": "msg"
+            },
+            {
+                "value": "role_id",
+                "type": "msg"
+            },
+            {
+                "value": "webhookmsteams",
+                "type": "msg"
+            }
+        ],
+        "x": 350,
+        "y": 200,
+        "wires": [
+            [
+                "49897765.464a28"
+            ]
+        ]
+    },
+    {
+        "id": "a6b3f3a5513c9c73",
+        "type": "function",
+        "z": "6df9daf17619de85",
+        "name": "store results for development",
+        "func": "flow.set(\"devtimebookings\",msg.payload);\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1150,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7df3179b84f45e6b",
+        "type": "function",
+        "z": "6df9daf17619de85",
+        "name": "get results for development",
+        "func": "msg.payload=flow.get(\"devtimebookings\");\n\nreturn msg;\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 460,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "54b65db10a9828ac",
+        "type": "inject",
+        "z": "6df9daf17619de85",
+        "name": "dryrun",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "dryrun",
+        "payloadType": "date",
+        "x": 90,
+        "y": 460,
+        "wires": [
+            [
+                "7df3179b84f45e6b"
+            ]
+        ]
+    },
+    {
+        "id": "9a33de8017370297",
+        "type": "comment",
+        "z": "6df9daf17619de85",
+        "name": "info for devs",
+        "info": "if you prefer to get the data once from Harvest and then work on the filter node offline, you can connect the flow to \"store results for development\" to store the output in a flow variable and use this flow to inject the output into the filter node.",
+        "x": 90,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "60cfce56da2813c1",
+        "type": "comment",
+        "z": "6df9daf17619de85",
+        "name": "dry run does not push to MS Teams",
+        "info": "Explanation for config node, do not edit here, do edit it in the node called \"config\"\n\nharvestid= id of Syncier accound in Harvest\npropertybearer= Auth Token: 'Bearer\nrole_id= sub_group for Syncier Analytics in Harvest",
+        "x": 160,
+        "y": 100,
+        "wires": []
+    }
+]

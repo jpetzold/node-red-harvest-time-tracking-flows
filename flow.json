@@ -136,9 +136,12 @@
         "type": "function",
         "z": "6df9daf17619de85",
         "name": "set headers and timeframe",
-        "func": "//setting headers\nmsg.headers = {};\nmsg.headers['User-Agent'] = 'Node Red';\nmsg.headers['Harvest-Account-ID'] = msg.harvestid;\nmsg.headers['Authorization'] = msg.propertybearer;\n\n\nvar f = new Date();\n// set to Monday of this week\nf.setDate(f.getDate() - (f.getDay() + 6) % 7);\n//set to previous Monday\nf.setDate(f.getDate() - 7);\n//make new date for previousSunday\nvar t = new Date(f.getTime());\nt.setDate(t.getDate()+6);\nmsg.tf=\"from=\"+f.getFullYear()+(\"0\" + (f.getMonth() + 1)).slice(-2)+(\"0\" + f.getDate()).slice(-2)+\"&to=\"+f.getFullYear()+(\"0\" + (t.getMonth() + 1)).slice(-2)+(\"0\" + t.getDate()).slice(-2);\n\n////timeframe for previous month\n//var x = new Date();\n//x.setDate(1);\n//x.setMonth(x.getMonth()-1);\n//var f = new Date(x.getFullYear(), x.getMonth(), 1);\n//var t = new Date(x.getFullYear(), x.getMonth() + 1, 0);\n//msg.tf=\"from=\"+f.getFullYear()+(\"0\" + (f.getMonth() + 1)).slice(-2)+(\"0\" + f.getDate()).slice(-2)+\"&to=\"+f.getFullYear()+(\"0\" + (t.getMonth() + 1)).slice(-2)+(\"0\" + t.getDate()).slice(-2);\n\nreturn msg;\n\n",
+        "func": "//setting headers\nmsg.headers = {};\nmsg.headers['User-Agent'] = 'Node Red';\nmsg.headers['Harvest-Account-ID'] = msg.harvestid;\nmsg.headers['Authorization'] = msg.propertybearer;\n\n//set timeframe for previous working week\nvar f = new Date();\n// set to Monday of this week\nf.setDate(f.getDate() - (f.getDay() + 6) % 7);\n//set to previous Monday\nf.setDate(f.getDate() - 7);\n//make new date for previousSunday\nvar t = new Date(f.getTime());\nt.setDate(t.getDate()+6);\nmsg.tf=\"from=\"+f.getFullYear()+(\"0\" + (f.getMonth() + 1)).slice(-2)+(\"0\" + f.getDate()).slice(-2)+\"&to=\"+f.getFullYear()+(\"0\" + (t.getMonth() + 1)).slice(-2)+(\"0\" + t.getDate()).slice(-2);\n\n\nreturn msg;\n\n",
         "outputs": 1,
         "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 1180,
         "y": 320,
         "wires": [
@@ -207,8 +210,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 550,
-        "y": 460,
+        "x": 570,
+        "y": 500,
         "wires": [
             [
                 "9dc373f6.0ae8c8"
@@ -263,7 +266,7 @@
         "topic": "dryrun",
         "payloadType": "date",
         "x": 90,
-        "y": 140,
+        "y": 120,
         "wires": [
             [
                 "d7fc77ad.85542"
@@ -276,7 +279,7 @@
         "z": "6df9daf17619de85",
         "name": "flow to get an overview of what time is booked on for a certain team in harvest what projects",
         "info": "Explanation for config node, do not edit here, do edit it in the node called \"config\"\n\nharvestid= id of Syncier accound in Harvest\npropertybearer= Auth Token: 'Bearer\nrole_id= sub_group for Syncier Analytics in Harvest",
-        "x": 340,
+        "x": 980,
         "y": 40,
         "wires": []
     },
@@ -418,7 +421,7 @@
         "randomUnits": "seconds",
         "drop": false,
         "allowrate": false,
-        "x": 130,
+        "x": 110,
         "y": 380,
         "wires": [
             [
@@ -484,7 +487,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1150,
+        "x": 1190,
         "y": 380,
         "wires": [
             []
@@ -501,8 +504,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 320,
-        "y": 460,
+        "x": 340,
+        "y": 500,
         "wires": [
             []
         ]
@@ -527,8 +530,8 @@
         "onceDelay": 0.1,
         "topic": "dryrun",
         "payloadType": "date",
-        "x": 90,
-        "y": 460,
+        "x": 110,
+        "y": 500,
         "wires": [
             [
                 "7df3179b84f45e6b"
@@ -541,8 +544,8 @@
         "z": "6df9daf17619de85",
         "name": "info for devs",
         "info": "if you prefer to get the data once from Harvest and then work on the filter node offline, you can connect the flow to \"store results for development\" to store the output in a flow variable and use this flow to inject the output into the filter node.",
-        "x": 90,
-        "y": 500,
+        "x": 110,
+        "y": 460,
         "wires": []
     },
     {
@@ -550,9 +553,19 @@
         "type": "comment",
         "z": "6df9daf17619de85",
         "name": "dry run does not push to MS Teams",
-        "info": "Explanation for config node, do not edit here, do edit it in the node called \"config\"\n\nharvestid= id of Syncier accound in Harvest\npropertybearer= Auth Token: 'Bearer\nrole_id= sub_group for Syncier Analytics in Harvest",
+        "info": "Explanation for config node, do not edit here, do edit it in the node called \"config\"\n\nharvestid=id of your Harvest account\npropertybearer= Auth Token: 'Bearer  <>''\nrole_id= team in Harvest, which you would like to analyze",
         "x": 160,
-        "y": 100,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "dee94bce28ee152e",
+        "type": "comment",
+        "z": "6df9daf17619de85",
+        "name": "configure the execution frequency in this node",
+        "info": "Explanation for config node, do not edit here, do edit it in the node called \"config\"\n\nharvestid=id of your Harvest account\npropertybearer= Auth Token: 'Bearer  <>''\nrole_id= team in Harvest, which you would like to analyze",
+        "x": 200,
+        "y": 160,
         "wires": []
     }
 ]

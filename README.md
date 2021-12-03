@@ -31,3 +31,8 @@ Every flow comes with a config node, where you need to enter the following:
 * ```msg.propertybearer``` to specifcy the Bearer token you have for accessing the Harvest API of your project. The format has to be "Bearer <your_token>". The token can be retrieved from this [site](https://id.getharvest.com/developers).
 * ```msg.role_id``` to specify the team you want to fetch the data for.
 * ```msg.webhookmsteams``` to configure the webhook you want to write the result data to.
+
+#### Final Result
+After importing the flow (or setting up the project in Node-RED) the flows should look something like 
+
+![Example Flow](https://github.com/jpetzold/node-red-harvest-time-tracking-flows/blob/master/docs/flow1.PNG)

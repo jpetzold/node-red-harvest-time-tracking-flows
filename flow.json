@@ -406,7 +406,7 @@
         "id": "4315569b.3e329",
         "type": "delay",
         "z": "6df9daf17619de85",
-        "name": "",
+        "name": "Rate Limiter",
         "pauseType": "rate",
         "timeout": "5",
         "timeoutUnits": "seconds",
@@ -417,7 +417,8 @@
         "randomLast": "5",
         "randomUnits": "seconds",
         "drop": false,
-        "x": 160,
+        "allowrate": false,
+        "x": 130,
         "y": 380,
         "wires": [
             [

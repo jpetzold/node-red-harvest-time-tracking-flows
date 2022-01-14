@@ -3,6 +3,8 @@ node-red-harvest-timetracking-flows
 
 ### Intro
 
+
+
 This [node-red](https://nodered.org/) project offeres extraction of data from [Harvest](https://harvestapp.com) via their REST API and publishes the results to [MS Teams](https://www.microsoft.com/de-de/microsoft-teams/group-chat-software) via Webhook.
 
 The flow is depicted as follows:

@@ -34,7 +34,7 @@
         "id": "e5a2c794.d49f38",
         "type": "inject",
         "z": "6df9daf17619de85",
-        "name": "fullrun is in da house",
+        "name": "fullrun",
         "repeat": "",
         "crontab": "",
         "once": false,

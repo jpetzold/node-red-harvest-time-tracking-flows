@@ -561,8 +561,8 @@
         "z": "6df9daf17619de85",
         "name": "dry run does not push to MS Teams",
         "info": "Explanation for config node, do not edit here, do edit it in the node called \"config\"\n\nharvestid=id of your Harvest account\npropertybearer= Auth Token: 'Bearer  <>''\nrole_id= team in Harvest, which you would like to analyze",
-        "x": 160,
-        "y": 80,
+        "x": 240,
+        "y": 60,
         "wires": []
     },
     {

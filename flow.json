@@ -7,6 +7,13 @@
         "info": ""
     },
     {
+        "id": "63526a6e1afdf1e1",
+        "type": "tab",
+        "label": "Booking Reminder",
+        "disabled": false,
+        "info": ""
+    },
+    {
         "id": "9dc373f6.0ae8c8",
         "type": "debug",
         "z": "6df9daf17619de85",
@@ -279,8 +286,8 @@
         "z": "6df9daf17619de85",
         "name": "flow to get an overview of what time is booked on for a certain team in harvest what projects",
         "info": "Explanation for config node, do not edit here, do edit it in the node called \"config\"\n\nharvestid= id of Syncier accound in Harvest\npropertybearer= Auth Token: 'Bearer\nrole_id= sub_group for Syncier Analytics in Harvest",
-        "x": 980,
-        "y": 40,
+        "x": 960,
+        "y": 60,
         "wires": []
     },
     {
